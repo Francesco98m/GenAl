@@ -1,23 +1,29 @@
 #include "nn.cpp"
 
 //create a population of pop net, then select the top 15 and return those
-vector<NN> selection(vector<NN> sample/*multiple of 10!!*/,string name, int nsample, int nets)
+vector<NN> selection(vector<NN> sample,string name, int nsample, int nets)
 {
     vector<NN> selection;
-    set<double> errors;
+    //set<double> errors;
+    vector<tuple<double,int>> errors;
     int counter=0;
-    set<double>::iterator it;
+    //set<double>::iterator it;
     double err;
     for(int i=0; i<sample.size(); i++)
     {
         err=sample[i].error(name,nsample);
         sample[i].err=err;
-        errors.insert(err);
+        errors.push_back(make_tuple(err,i));
     }
-    while(counter<nets)
+    sort(errors.begin(),errors.end());
+    for(int i=0; i<nets; i++)
+    {
+        selection.push_back(sample[get<1>(errors[i])]);
+    }
+    /*while(counter<nets)
     {
         it=errors.begin();
-        cout<<errors.size()<<endl;
+        //cout<<errors.size()<<endl;
         for(int j=0; j<sample.size(); j++)
         {
             if(sample[j].err==*it)
@@ -27,7 +33,7 @@ vector<NN> selection(vector<NN> sample/*multiple of 10!!*/,string name, int nsam
             }
         }
         counter++;
-    }
+    }*/
     //cout<<"SELECTION DONE\n";
     return selection;
 
@@ -146,7 +152,8 @@ vector<NN> training(int epoch, vector<NN> app1, string name, int nsample, string
         o<<err;
         o<<'\n';
         counter++;
-        cout<<"Done "<<counter<<" selection\n";
+        if(counter%100==0) cout<<"Done "<<counter<<" selection\n";
+        
     }
     o.close();
     return selection(app1,name,nsample,nets);

@@ -1,5 +1,5 @@
 #include "genetic.cpp"
-
+using namespace std;
 int main()
 {
     srand(time(NULL));
@@ -12,7 +12,7 @@ int main()
     int samples;
     int nets,epoch;
     int selec=0,a=0, counter=0;
-    bool esc=true,start=true;
+    bool esc=true,start=true, selected=true;
     while(esc)
     {
         if(start)
@@ -61,20 +61,24 @@ int main()
         }
         else if(selec==2)//genetic
         {
+            if(selected)
+            {
+                for(int i=0; i<100; i++)
+                    {
+                        app1.push_back(NN(NN_str));
+                    }
+                cout<<"Nets created\n";
+                selected=false;
+            }
             cout<<"How many nets do you want to select?(more than 10 less than 100)\t";
             cin>>nets;
             cout<<"How many selections?\t";
             cin>>epoch;
-            for(int i=0; i<100; i++)
-            {
-                app1.push_back(NN(NN_str));
-            }
-            cout<<"Nets created\n";
             cout<<"Now the natural selection begin...\n";
             auto start=chrono::high_resolution_clock::now();
 
             batch=training(epoch,app1,"test_p",100,"identity",nets);
-            
+            app1=batch;
             auto finish =chrono::high_resolution_clock::now();
             chrono::duration<double> elapsed=finish-start;
             cout<<"Total elapsed time:\t"<<elapsed.count()<<" sec.\n";
